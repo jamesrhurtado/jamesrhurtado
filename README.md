@@ -11,4 +11,4 @@ you can reach out in case you have any questions. i have helped lots of people a
 
 so my work is on my GitHub (always capitalizing the G and the H or they'll kick me out of the [GitHub Campus Expert program](https://githubcampus.expert/jamesrhurtado/), kidding… i think). you can see some of my repositories there (although some are private because of side projects i could never finish). others are in my portfolio and yeah, that's it.
 
-i'm not good at designing so this will be a work in progress. for now i can tell you i work mostly with python, typescript, javascript, react, sql, and tools like docker, azure, git, github. at least that is what i'm using now for different projects.
+i'm not good at designing so this will be a work in progress. for now i can tell you i work mostly with python, typescript, javascript, react, sql, and tools like docker, azure, git, GitHub. at least that is what i'm using now for different projects.
