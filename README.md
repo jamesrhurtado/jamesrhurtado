@@ -1,6 +1,6 @@
 ## Hey, I'm James
 
-so i am james, i am (almost) a software engineer. i'm not sure what i can tell about me other than what you can see in my [portfolio](https://jamesrhurtado.github.io/) (probably needs a refresh). i just code, share, and attend events (as speaker sometimes). that's it in a nutshell. oh, and i also share content on instagram when i have free time (not an influencer but i like sharing little pieces about me).
+so i am james, i am (almost) a software engineer. i'm not sure what i can tell about me other than what you can see in my [portfolio](http://jameshurtado.vercel.app/) (probably needs a refresh). i just code, share, and attend events (as speaker sometimes). that's it in a nutshell. oh, and i also share content on instagram when i have free time (not an influencer but i like sharing little pieces about me).
 
 **Social Media:**
 you can reach out in case you have any questions. i have helped lots of people and i'll be happy to help you too (it's gonna depend on my availability tho).
