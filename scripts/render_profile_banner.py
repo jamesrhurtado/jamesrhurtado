@@ -35,17 +35,24 @@ GRAY_MID = "#dfdfdf"
 GRAY_DARK = "#808080"
 BLACK = "#101010"
 CREAM = "#fffbd6"
-CREAM_SHADOW = "#d3ca85"
 AMBER = "#f0b429"
 
 MESSAGES = [
-    "It looks like you’re exploring James’ GitHub profile. "
-    "Would you like some help?",
-    "James builds software with AI, automation, and developer tools.",
-    "He also creates technical content and supports developer "
-    "communities across Latin America.",
-    "I found some interesting projects. You should probably keep scrolling.",
+    "Oh, hello! It looks like you’ve wandered into James’ GitHub profile. "
+    "Need a guide?",
+    "James is a software engineer who likes building products, automating "
+    "things, and negotiating with stubborn bugs.",
+    "He’s also a GitHub Campus Expert and Microsoft Student Ambassador from "
+    "LATAM. Yes, he likes communities too.",
+    "You’ll find him at tech events, usually attending, sometimes speaking, "
+    "and always wanting to meet interesting people.",
+    "On Instagram, he shares lessons, useful resources, and experiences—"
+    "mostly so someone else can avoid the same mistakes.",
+    "I found some interesting projects below. Keep scrolling—or check out "
+    "his portfolio. I already did the paperwork.",
 ]
+
+QUOTE_INTRO = "Hey, I’m not done yet! Here’s a quote to brighten your day."
 
 MOTIVATIONS = [
     ("You’re doing great! Keep up the good work.", 3),
@@ -84,8 +91,9 @@ FONT_REGULAR = font_path("Geneva.ttf", "Verdana.ttf", "DejaVuSans.ttf")
 FONT_BOLD = font_path(
     "Tahoma Bold.ttf", "Verdana Bold.ttf", "DejaVuSans-Bold.ttf"
 )
+CLIPPY_FONT = CLIPPY_DIR / "MS Sans Serif 8pt bold.ttf"
 TITLE_FONT = ImageFont.truetype(FONT_BOLD, 22)
-BODY_FONT = ImageFont.truetype(FONT_REGULAR, 34)
+BODY_FONT = ImageFont.truetype(str(CLIPPY_FONT), 30)
 STATUS_FONT = ImageFont.truetype(FONT_BOLD, 16)
 TINY_FONT = ImageFont.truetype(FONT_REGULAR, 14)
 
@@ -159,15 +167,8 @@ def draw_window() -> Image.Image:
     beveled_rect(draw, (10, 61, 889, 326), TEAL, raised=False, width=3)
     draw.rectangle((18, 69, 881, 318), fill="#0a8b8b")
 
-    # Small original interface decorations; deliberately not Windows icons.
-    draw.rectangle((30, 84, 49, 103), fill=GRAY_MID, outline=BLACK, width=2)
-    draw.line((35, 94, 44, 94), fill=NAVY, width=3)
-    draw.text((58, 84), "profile://james", font=TINY_FONT, fill="white")
-    draw.line((29, 112, 870, 112), fill="#55b4b4", width=2)
-
     beveled_rect(draw, (10, 333, 889, 360), GRAY, raised=False, width=2)
     draw.text((20, 338), "READY", font=STATUS_FONT, fill=BLACK)
-    draw.text((575, 338), "AI  ·  AUTOMATION  ·  COMMUNITY", font=TINY_FONT, fill=BLACK)
     return window
 
 
@@ -234,9 +235,7 @@ def bubble_layer(message: str, opacity: int = 255) -> Image.Image:
     layer = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
     box = (82, 127, 699, 304)
-    shadow = (88, 133, 705, 310)
-    draw.rounded_rectangle(shadow, radius=18, fill=CREAM_SHADOW, outline=BLACK, width=3)
-    draw.rounded_rectangle(box, radius=18, fill=CREAM, outline=BLACK, width=4)
+    draw.rounded_rectangle(box, radius=16, fill=CREAM, outline=BLACK, width=3)
     draw.polygon(
         ((696, 241), (752, 276), (696, 282)),
         fill=CREAM,
@@ -245,7 +244,7 @@ def bubble_layer(message: str, opacity: int = 255) -> Image.Image:
     draw.line((696, 243, 696, 280), fill=CREAM, width=6)
 
     lines = wrap_text(draw, message, 560)
-    line_height = 40
+    line_height = 35
     block_height = len(lines) * line_height
     y = 127 + (177 - block_height) / 2 - 2
     for line in lines:
@@ -324,16 +323,24 @@ def render(motivation_index: int) -> tuple[list[Image.Image], list[int]]:
     frames: list[Image.Image] = []
     durations: list[int] = []
     frame_ms = 100
-    phases = (
-        (2.0, 5.6, 0),
-        (6.0, 9.2, 1),
-        (9.6, 13.2, 3),
-        (13.6, 17.6, 6),
-    )
+    profile_animation_indexes = (0, 1, 3, 0, 4, 6)
+    phases = []
+    for message_index, animation_index in enumerate(profile_animation_indexes):
+        start = 2.0 + message_index * 3.7
+        phases.append((start, start + 3.4, message_index, animation_index))
+
+    profile_end = phases[-1][1]
+    quote_intro_start = profile_end + 0.3
+    quote_intro_end = quote_intro_start + 3.0
+    motivation_start = quote_intro_end + 0.3
+    motivation_end = motivation_start + 3.6
+    exit_end = motivation_end + 1.0
+    close_end = exit_end + 1.0
+    total_seconds = close_end + 0.4
     motivation, motivation_animation_number = MOTIVATIONS[motivation_index]
     motivation_animation_index = motivation_animation_number - 1
 
-    for frame_index in range(240):
+    for frame_index in range(round(total_seconds * 10)):
         seconds = frame_index / 10
         if frame_index == 0:
             frame = draw_desktop().convert("RGB")
@@ -349,43 +356,62 @@ def render(motivation_index: int) -> tuple[list[Image.Image], list[int]]:
                 assistant_opacity=round(255 * progress),
                 assistant_rotation=360 * (1 - progress),
             )
-        elif seconds < 17.6:
+        elif seconds < profile_end:
             active = None
-            for start, end, animation_index in phases:
+            for start, end, message_index, animation_index in phases:
                 if start <= seconds < end:
-                    active = (start, animation_index)
+                    active = (start, message_index, animation_index)
                     break
             if active is not None:
-                start, animation_index = active
+                start, message_index, animation_index = active
                 local_ms = round((seconds - start) * 1000)
                 bubble_alpha = min(255, round(local_ms / 300 * 255))
                 frame = scene(
                     window,
                     assistant=animations[animation_index].frame_at(local_ms),
-                    message=MESSAGES[(0, 1, 3, 6).index(animation_index)],
+                    message=MESSAGES[message_index],
                     bubble_opacity=bubble_alpha,
                 )
             else:
                 # A short empty-bubble beat prevents text overlap while the
                 # authentic source animation switches to the next sequence.
-                next_index = (1, 3, 6)[
-                    min(2, max(0, round((seconds - 5.6) / 4)))
-                ]
+                next_index = next(
+                    (
+                        animation_index
+                        for start, _, _, animation_index in phases
+                        if start > seconds
+                    ),
+                    profile_animation_indexes[-1],
+                )
                 frame = scene(
                     window,
                     assistant=animations[next_index].frame_at(0),
                     message="",
                 )
-        elif seconds < 21.6:
-            local_ms = round((seconds - 17.6) * 1000)
+        elif seconds < quote_intro_end:
+            local_ms = round((seconds - quote_intro_start) * 1000)
+            frame = scene(
+                window,
+                assistant=animations[3].frame_at(max(0, local_ms)),
+                message=QUOTE_INTRO if seconds >= quote_intro_start else "",
+                bubble_opacity=min(255, max(0, round(local_ms / 300 * 255))),
+            )
+        elif seconds < motivation_start:
+            frame = scene(
+                window,
+                assistant=animations[motivation_animation_index].frame_at(0),
+                message="",
+            )
+        elif seconds < motivation_end:
+            local_ms = round((seconds - motivation_start) * 1000)
             frame = scene(
                 window,
                 assistant=animations[motivation_animation_index].frame_at(local_ms),
                 message=motivation,
                 bubble_opacity=min(255, round(local_ms / 300 * 255)),
             )
-        elif seconds < 22.6:
-            progress = seconds - 21.6
+        elif seconds < exit_end:
+            progress = seconds - motivation_end
             frame = scene(
                 window,
                 assistant=animations[motivation_animation_index].frame_at(
@@ -396,8 +422,8 @@ def render(motivation_index: int) -> tuple[list[Image.Image], list[int]]:
                 assistant_opacity=round(255 * (1 - progress)),
                 assistant_rotation=-360 * progress,
             )
-        elif seconds < 23.6:
-            frame = scaled_window_frame(window, 1 - (seconds - 22.6))
+        elif seconds < close_end:
+            frame = scaled_window_frame(window, 1 - (seconds - exit_end))
         else:
             frame = draw_desktop().convert("RGB")
         frames.append(frame)
@@ -406,7 +432,7 @@ def render(motivation_index: int) -> tuple[list[Image.Image], list[int]]:
 
 
 def save_contact_sheet(frames: list[Image.Image]) -> None:
-    picks = [0, 15, 30, 72, 112, 152, 190, len(frames) - 1]
+    picks = [30, 67, 104, 141, 178, 215, 252, 278]
     thumb_size = (480, 210)
     sheet = Image.new("RGB", (960, 840), "#20242a")
     draw = ImageDraw.Draw(sheet)
