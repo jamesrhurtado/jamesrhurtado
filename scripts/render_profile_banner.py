@@ -24,14 +24,12 @@ OUTPUT_PATH = ROOT / "assets" / "profile-assistant-banner.gif"
 CONTACT_SHEET_PATH = Path(tempfile.gettempdir()) / "profile-assistant-preview.png"
 
 WIDTH, HEIGHT = 960, 420
-MOTION_MS = 90
 
 TEAL = "#087f7f"
 TEAL_DARK = "#006666"
 NAVY = "#000080"
 GRAY = "#c0c0c0"
 GRAY_LIGHT = "#ffffff"
-GRAY_MID = "#dfdfdf"
 GRAY_DARK = "#808080"
 BLACK = "#101010"
 CREAM = "#fffbd6"
@@ -71,31 +69,11 @@ MOTIVATIONS = [
     ("Success is not about the destination, it’s about the journey.", 1),
 ]
 
-
-def font_path(*names: str) -> str:
-    roots = (
-        Path("/System/Library/Fonts"),
-        Path("/System/Library/Fonts/Supplemental"),
-        Path("/Library/Fonts"),
-        Path("/usr/share/fonts/truetype/dejavu"),
-    )
-    for root in roots:
-        for name in names:
-            candidate = root / name
-            if candidate.exists():
-                return str(candidate)
-    raise FileNotFoundError(f"Could not find any of these fonts: {names}")
-
-
-FONT_REGULAR = font_path("Geneva.ttf", "Verdana.ttf", "DejaVuSans.ttf")
-FONT_BOLD = font_path(
-    "Tahoma Bold.ttf", "Verdana Bold.ttf", "DejaVuSans-Bold.ttf"
-)
 CLIPPY_FONT = CLIPPY_DIR / "MS Sans Serif 8pt bold.ttf"
-TITLE_FONT = ImageFont.truetype(FONT_BOLD, 22)
+TITLE_FONT = ImageFont.truetype(str(CLIPPY_FONT), 22)
 BODY_FONT = ImageFont.truetype(str(CLIPPY_FONT), 30)
-STATUS_FONT = ImageFont.truetype(FONT_BOLD, 16)
-TINY_FONT = ImageFont.truetype(FONT_REGULAR, 14)
+STATUS_FONT = ImageFont.truetype(str(CLIPPY_FONT), 16)
+TINY_FONT = ImageFont.truetype(str(CLIPPY_FONT), 14)
 
 
 def ease_out_back(value: float) -> float:
